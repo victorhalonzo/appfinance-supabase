@@ -4188,7 +4188,26 @@ async function loginUser() {
 }
 
 
+async function logoutUser() {
+    try {
+        const { error } = await supabaseClient.auth.signOut();
 
+        if (error) throw error;
+
+        // Limpiar datos locales
+        appData = [];
+
+        showToast('Sesión cerrada correctamente.', 'success');
+
+        // Volver a la pantalla de inicio de sesión
+        document.getElementById('app').classList.add('hidden');
+        document.getElementById('auth-container').classList.remove('hidden');
+
+    } catch (error) {
+        console.error('Error al cerrar sesión:', error);
+        showToast('No se pudo cerrar la sesión.', 'error');
+    }
+}
 
 async function registerUser() {
     const email = document.getElementById('register-email').value.trim();
