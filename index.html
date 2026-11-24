@@ -1,0 +1,405 @@
+<!doctype html>
+<html lang="es" class="h-full">
+
+<head>
+
+    
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Visión - Finanzas Personales</title>
+    <link rel="icon" href="data:,">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&amp;display=swap"
+        rel="stylesheet">
+
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdn.jsdelivr.net/npm/lucide@0.577.0/dist/umd/lucide.min.js" type="text/javascript"></script>
+    <script src="https://cdn.tailwindcss.com/3.4.17" type="text/javascript"></script>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+    <script>
+        const supabaseClient = supabase.createClient(
+            'https://jojlnlqktgznpjsifktm.supabase.co',
+            'sb_publishable_AW5lT8k50c9-MQkHH4_0tA_6aVgSh-l'
+        );
+    </script>
+
+</head>
+
+<body class="h-full text-gray-800 overflow-auto"
+    style="background: radial-gradient(circle at 12% 8%, rgba(179,66,141,0.14), transparent 30%), radial-gradient(circle at 88% 18%, rgba(220,114,64,0.12), transparent 28%), linear-gradient(135deg, #fff8fc 0%, #f7f8ff 52%, #fffaf6 100%);">
+
+
+    <!-- CONTENEDOR DE AUTENTICACIÓN -->
+    <div id="auth-container" class="min-h-screen w-full flex items-center justify-center p-4">
+
+        <div class="auth-card glass-surface card-shadow w-full max-w-md rounded-3xl p-6 sm:p-8">
+
+            <!-- LOGOTIPO -->
+            <div class="flex flex-col items-center mb-8">
+                <div class="auth-logo gradient-light rounded-2xl w-16 h-16 flex items-center justify-center mb-4">
+                    <i data-lucide="wallet" class="w-8 h-8"></i>
+                </div>
+
+                <h1 class="text-3xl font-bold gradient-text">Visión</h1>
+                <p class="text-sm text-gray-500 mt-1">Finanzas personales</p>
+            </div>
+
+            <!-- INICIO DE SESIÓN -->
+            <div id="login-view">
+
+                <div class="text-center mb-7">
+                    <h2 class="text-2xl font-bold text-gray-800">
+                        ¡Bienvenido!
+                    </h2>
+                    <p class="text-sm text-gray-500 mt-2">
+                        Ingresa a tu cuenta y continúa gestionando tus finanzas.
+                    </p>
+                </div>
+
+                <form id="login-form" class="space-y-5">
+
+                    <div>
+                        <label for="login-email" class="block text-sm font-semibold text-gray-700 mb-2">
+                            Correo electrónico
+                        </label>
+
+                        <div class="auth-input-wrapper">
+                            <i data-lucide="mail"></i>
+                            <input type="email" id="login-email" placeholder="nombre@correo.com" required>
+                        </div>
+                    </div>
+
+                    <div>
+                        <label for="login-password" class="block text-sm font-semibold text-gray-700 mb-2">
+                            Contraseña
+                        </label>
+
+                        <div class="auth-input-wrapper">
+                            <i data-lucide="lock"></i>
+                            <input type="password" id="login-password" placeholder="Ingresa tu contraseña" required>
+                        </div>
+                    </div>
+
+                    <div class="flex justify-end">
+                        <button type="button" id="show-recovery" class="text-sm font-semibold gradient-text">
+                            ¿Olvidaste tu contraseña?
+                        </button>
+                    </div>
+
+                    <button type="submit"
+                        class="auth-submit gradient-primary w-full py-3 rounded-xl font-semibold btn-press">
+                        Iniciar sesión
+                        <i data-lucide="arrow-right" class="w-4 h-4 inline-block ml-1"></i>
+                    </button>
+
+                </form>
+
+                <div class="auth-divider">
+                    <span>¿Eres nuevo en Visión?</span>
+                </div>
+
+                <button type="button" id="show-register"
+                    class="w-full py-3 rounded-xl border border-purple-100 text-gray-700 font-semibold hover:bg-purple-50 transition">
+                    Crear una cuenta
+                </button>
+
+            </div>
+
+            <!-- REGISTRO -->
+            <div id="register-view" hidden>
+
+                <div class="text-center mb-7">
+                    <h2 class="text-2xl font-bold text-gray-800">
+                        Crea tu cuenta
+                    </h2>
+                    <p class="text-sm text-gray-500 mt-2">
+                        Comienza a organizar tu futuro financiero.
+                    </p>
+                </div>
+
+                <form id="register-form" class="space-y-5">
+
+                    <div>
+                        <label for="register-name" class="block text-sm font-semibold text-gray-700 mb-2">
+                            Nombre
+                        </label>
+
+                        <div class="auth-input-wrapper">
+                            <i data-lucide="user"></i>
+                            <input type="text" id="register-name" placeholder="Tu nombre" required>
+                        </div>
+                    </div>
+
+                    <div>
+                        <label for="register-email" class="block text-sm font-semibold text-gray-700 mb-2">
+                            Correo electrónico
+                        </label>
+
+                        <div class="auth-input-wrapper">
+                            <i data-lucide="mail"></i>
+                            <input type="email" id="register-email" placeholder="nombre@correo.com" required>
+                        </div>
+                    </div>
+
+                    <div>
+                        <label for="register-password" class="block text-sm font-semibold text-gray-700 mb-2">
+                            Contraseña
+                        </label>
+
+                        <div class="auth-input-wrapper">
+                            <i data-lucide="lock"></i>
+                            <input type="password" id="register-password" placeholder="Mínimo 8 caracteres"
+                                minlength="8" required>
+                        </div>
+                    </div>
+
+                    <button type="submit"
+                        class="auth-submit gradient-primary w-full py-3 rounded-xl font-semibold btn-press">
+                        Crear cuenta
+                        <i data-lucide="arrow-right" class="w-4 h-4 inline-block ml-1"></i>
+                    </button>
+
+                </form>
+
+                <p class="text-center text-sm text-gray-500 mt-6">
+                    ¿Ya tienes una cuenta?
+                    <button type="button" id="show-login" class="font-semibold gradient-text">
+                        Iniciar sesión
+                    </button>
+                </p>
+
+            </div>
+
+            <!-- RECUPERACIÓN DE CONTRASEÑA -->
+            <div id="recovery-view" hidden>
+
+                <div class="text-center mb-7">
+                    <h2 class="text-2xl font-bold text-gray-800">
+                        Recupera tu acceso
+                    </h2>
+                    <p class="text-sm text-gray-500 mt-2">
+                        Ingresa tu correo y te ayudaremos a recuperar tu cuenta.
+                    </p>
+                </div>
+
+                <form id="recovery-form" class="space-y-5">
+
+                    <div>
+                        <label for="recovery-email" class="block text-sm font-semibold text-gray-700 mb-2">
+                            Correo electrónico
+                        </label>
+
+                        <div class="auth-input-wrapper">
+                            <i data-lucide="mail"></i>
+                            <input type="email" id="recovery-email" placeholder="nombre@correo.com" required>
+                        </div>
+                    </div>
+
+                    <button type="submit" class="auth-submit gradient-primary w-full py-3 rounded-xl font-semibold">
+                        Enviar instrucciones
+                    </button>
+
+                </form>
+
+                <button type="button" id="recovery-back"
+                    class="w-full text-center text-sm font-semibold gradient-text mt-6">
+                    Volver al inicio de sesión
+                </button>
+
+            </div>
+
+            <p class="text-center text-xs text-gray-400 mt-8">
+                Tu tranquilidad financiera empieza aquí.
+            </p>
+
+        </div>
+    </div>
+
+
+
+    <div id="app" class="h-full w-full flex flex-col hidden">
+        <!-- Toast Notifications -->
+        <div id="toast-container" class="fixed top-4 left-4 right-4 z-50 flex flex-col gap-2"></div>
+        <!-- Daily Check Modal -->
+        <div id="daily-check-modal" class="fixed inset-0 bg-black/50 z-40 hidden items-center justify-center p-4">
+            <div class="bg-white rounded-2xl p-6 max-w-sm w-full card-shadow">
+                <h3 class="text-lg font-semibold text-center mb-4">Chequeo Diario</h3>
+                <p class="text-center text-gray-600 mb-2">Hoy gastaste:</p>
+                <p id="daily-spent" class="text-2xl font-bold text-center gradient-text mb-4">$0</p>
+                <p class="text-center text-gray-600 mb-4">¿Ese gasto fue necesario?</p>
+                <div class="flex gap-3">
+                    <button onclick="answerDailyCheck('yes')"
+                        class="flex-1 py-3 rounded-xl gradient-primary text-white font-medium btn-press">Sí</button>
+                    <button onclick="answerDailyCheck('no')"
+                        class="flex-1 py-3 rounded-xl border-2 border-gray-200 font-medium btn-press">No</button>
+                </div><button onclick="closeDailyCheck()" class="w-full mt-3 py-2 text-gray-500 text-sm">Omitir</button>
+            </div>
+        </div><!-- Header -->
+        <header class="gradient-primary text-white p-4 pb-6">
+            <div class="flex items-center justify-between mb-4">
+                <div>
+                    <h1 id="app-title" class="text-xl font-bold">Visión</h1>
+                    <p id="app-subtitle" class="text-sm opacity-90">Finanzas personales</p>
+                </div>
+                <div class="flex items-center gap-2">
+                    <select id="currency-select" onchange="changeCurrency(this.value)"
+                        class="bg-white/20 text-white text-sm rounded-lg px-3 py-2 border-0 outline-none cursor-pointer">
+                        <option value="USD" class="text-gray-800">USD $</option>
+                        <option value="COP" class="text-gray-800">COP $</option>
+                        <option value="PEN" class="text-gray-800">PEN S/</option>
+                        <option value="ARS" class="text-gray-800">ARS $</option>
+                        <option value="CLP" class="text-gray-800">CLP $</option>
+                        <option value="PYG" class="text-gray-800">PYG ₲</option>
+                        <option value="UYU" class="text-gray-800">UYU $</option>
+                    </select> <button onclick="showNotifications()" class="relative p-2 bg-white/20 rounded-full">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewbox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9">
+                            </path>
+                        </svg><span id="notification-badge"
+                            class="absolute -top-1 -right-1 w-5 h-5 bg-red-500 rounded-full text-xs flex items-center justify-center hidden">0</span>
+                    </button>
+                </div>
+            </div>
+            <div class="bg-white/20 rounded-2xl p-4">
+                <p class="text-sm opacity-90">Disponible este mes</p>
+                <p id="available-balance" class="text-3xl font-bold mt-1">$0</p>
+                <div class="flex gap-4 mt-3 text-sm">
+                    <div><span class="opacity-70">Ingresos:</span> <span id="total-income"
+                            class="font-semibold">$0</span>
+                    </div>
+                    <div><span class="opacity-70">Gastos:</span> <span id="total-expenses"
+                            class="font-semibold">$0</span>
+                    </div>
+                </div>
+            </div>
+        </header><!-- Main Content -->
+        <main id="main-content" class="flex-1 overflow-auto p-4 pb-24">
+            <!-- Pages will be rendered here -->
+        </main>
+        <div id="quick-register-sheet" class="fixed inset-0 bg-black/40 z-50 hidden items-end justify-center"
+            onclick="closeQuickRegister(event)">
+            <section class="w-full max-w-lg bg-white rounded-t-3xl p-5 shadow-2xl" onclick="event.stopPropagation()"
+                aria-label="Registro rápido">
+                <div class="flex items-center justify-between mb-3">
+                    <div>
+                        <p class="text-xs font-semibold uppercase tracking-wide text-gray-500">Registro rápido</p>
+                        <h2 id="quick-title" class="text-xl font-bold text-gray-900">¿Cuánto gastaste?</h2>
+                        <div class="flex gap-2 mt-3">
+                            <button id="quick-expense-tab" onclick="setQuickType('expense')"
+                                class="flex-1 py-2 rounded-xl pastel-expense text-sm font-semibold">Gasto</button><button
+                                id="quick-income-tab" onclick="setQuickType('income')"
+                                class="flex-1 py-2 rounded-xl pastel-income text-sm font-semibold opacity-60">Ingreso</button><button
+                                id="quick-debt-tab" onclick="setQuickType('debt')"
+                                class="flex-1 py-2 rounded-xl pastel-debt text-sm font-semibold opacity-60">Deudas</button>
+                        </div>
+                    </div><button onclick="closeQuickRegister()" class="p-2 rounded-full bg-gray-100 text-gray-500"
+                        aria-label="Cerrar">✕</button>
+                </div>
+                <div id="quick-intent-wrap" class="flex gap-2 mb-3"><button id="quick-needed"
+                        onclick="setQuickIntent('necessary')"
+                        class="flex-1 py-2 rounded-xl border-2 border-purple-300 bg-purple-50 text-sm font-semibold">Necesario</button><button
+                        id="quick-impulse" onclick="setQuickIntent('impulse')"
+                        class="flex-1 py-2 rounded-xl border-2 border-gray-200 text-sm font-semibold text-gray-600">Impulso</button>
+                </div>
+                <div id="quick-debt-selector" class="hidden mb-3"></div>
+                <div id="quick-amount" class="gradient-light rounded-2xl p-4 text-right text-3xl font-bold mb-3"
+                    aria-live="polite">
+                    0
+                </div>
+                <div id="quick-categories" class="flex gap-2 overflow-auto py-3"></div>
+                <p id="quick-category-help" class="text-center text-xs text-gray-400 mt-1 mb-2">Toca una categoría para
+                    guardar el registro</p>
+                <div class="grid grid-cols-3 gap-2">
+                    <button onclick="quickKey('1')"
+                        class="h-12 rounded-xl bg-gray-50 hover:bg-purple-50 text-lg font-semibold text-gray-800 border border-gray-100">1</button><button
+                        onclick="quickKey('2')"
+                        class="h-12 rounded-xl bg-gray-50 hover:bg-purple-50 text-lg font-semibold text-gray-800 border border-gray-100">2</button><button
+                        onclick="quickKey('3')"
+                        class="h-12 rounded-xl bg-gray-50 hover:bg-purple-50 text-lg font-semibold text-gray-800 border border-gray-100">3</button>
+                    <button onclick="quickKey('4')"
+                        class="h-12 rounded-xl bg-gray-50 hover:bg-purple-50 text-lg font-semibold text-gray-800 border border-gray-100">4</button><button
+                        onclick="quickKey('5')"
+                        class="h-12 rounded-xl bg-gray-50 hover:bg-purple-50 text-lg font-semibold text-gray-800 border border-gray-100">5</button><button
+                        onclick="quickKey('6')"
+                        class="h-12 rounded-xl bg-gray-50 hover:bg-purple-50 text-lg font-semibold text-gray-800 border border-gray-100">6</button>
+                    <button onclick="quickKey('7')"
+                        class="h-12 rounded-xl bg-gray-50 hover:bg-purple-50 text-lg font-semibold text-gray-800 border border-gray-100">7</button><button
+                        onclick="quickKey('8')"
+                        class="h-12 rounded-xl bg-gray-50 hover:bg-purple-50 text-lg font-semibold text-gray-800 border border-gray-100">8</button><button
+                        onclick="quickKey('9')"
+                        class="h-12 rounded-xl bg-gray-50 hover:bg-purple-50 text-lg font-semibold text-gray-800 border border-gray-100">9</button>
+                    <button onclick="quickKey('.')"
+                        class="h-12 rounded-xl bg-gray-50 hover:bg-purple-50 text-lg font-semibold text-gray-800 border border-gray-100">.</button><button
+                        onclick="quickKey('0')"
+                        class="h-12 rounded-xl bg-gray-50 hover:bg-purple-50 text-lg font-semibold text-gray-800 border border-gray-100">0</button><button
+                        onclick="quickKey('⌫')"
+                        class="h-12 rounded-xl bg-gray-50 hover:bg-purple-50 text-lg font-semibold text-gray-800 border border-gray-100">⌫</button>
+                </div>
+            </section>
+        </div><!-- Quick Savings Modal -->
+        <div id="quick-savings-modal" class="fixed inset-0 bg-black/50 z-50 hidden items-center justify-center p-4">
+            <div class="bg-white rounded-2xl p-6 max-w-sm w-full card-shadow">
+                <div class="flex items-center justify-between mb-4">
+                    <div>
+                        <p class="text-xs font-semibold uppercase tracking-wide text-gray-500">Ahorro rápido</p>
+                        <h3 class="text-lg font-semibold">Construye tu meta hoy</h3>
+                    </div><button onclick="closeQuickSavings()" class="p-2 rounded-full bg-gray-100 text-gray-500"
+                        aria-label="Cerrar">✕</button>
+                </div><label for="quick-savings-amount" class="text-sm text-gray-600 block mb-2">¿Cuánto vas a
+                    ahorrar?</label> <input type="number" id="quick-savings-amount" min="0" step="0.01"
+                    class="w-full px-4 py-4 text-2xl border border-gray-200 rounded-xl outline-none focus:ring-2 focus:ring-green-300"
+                    placeholder="0"> <button onclick="saveQuickSavings()"
+                    class="w-full mt-4 py-3 rounded-xl pastel-income font-semibold btn-press">+ Guardar ahorro</button>
+            </div>
+        </div><!-- Bottom Navigation -->
+        <nav class="fixed bottom-0 left-0 right-0 glass-strong border-t border-white/70 px-4 py-2 z-30">
+            <div class="flex justify-around">
+                <button onclick="navigateTo('home')" class="nav-btn flex flex-col items-center py-2 px-4"
+                    data-page="home">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewbox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6">
+                        </path>
+                    </svg><span class="text-xs mt-1">Inicio</span> </button> <button onclick="navigateTo('budget')"
+                    class="nav-btn flex flex-col items-center py-2 px-4" data-page="budget">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewbox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z">
+                        </path>
+                    </svg><span class="text-xs mt-1">Presupuesto</span> </button> <button onclick="openQuickRegister()"
+                    class="nav-btn flex flex-col items-center py-2 px-4" data-page="register">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewbox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+                    </svg><span class="text-xs mt-1">Registrar</span> </button> <button onclick="navigateTo('goals')"
+                    class="nav-btn flex flex-col items-center py-2 px-4" data-page="goals">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewbox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"></path>
+                    </svg><span class="text-xs mt-1">Metas</span> </button>
+            </div>
+        </nav><!-- Notifications Panel -->
+        <div id="notifications-panel" class="fixed inset-0 bg-black/50 z-40 hidden">
+            <div class="absolute right-0 top-0 bottom-0 w-full max-w-sm bg-white shadow-xl overflow-auto">
+                <div class="gradient-primary p-4 flex items-center justify-between">
+                    <h2 class="text-white font-semibold">Notificaciones</h2><button onclick="hideNotifications()"
+                        class="text-white p-1">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewbox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M6 18L18 6M6 6l12 12"></path>
+                        </svg></button>
+                </div>
+                <div id="notifications-list" class="p-4 space-y-3">
+                    <p class="text-gray-500 text-center py-8">No hay notificaciones</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="index.js">
+
+    </script>
+</body>
+
+</html>
