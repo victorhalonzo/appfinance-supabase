@@ -371,7 +371,7 @@ async function changeCurrency(currency) {
     try {
         // Obtener usuario autenticado
         const { data: { user }, error: userError } =
-            await supabase.auth.getUser();
+            await supabaseClient.auth.getUser();
 
         if (userError || !user) {
             showToast('No se pudo identificar al usuario', 'error');
@@ -845,7 +845,7 @@ async function deleteBudgetCategory(id) {
 
     try {
         const { data: { user }, error: userError } =
-            await supabase.auth.getUser();
+            await supabaseClient.auth.getUser();
 
         if (userError || !user) {
             showToast('No se pudo identificar al usuario', 'error');
@@ -2906,7 +2906,7 @@ async function saveDebtPayment() {
     try {
         // Obtener usuario autenticado
         const { data: { user }, error: userError } =
-            await supabase.auth.getUser();
+            await supabaseClient.auth.getUser();
 
         if (userError || !user) {
             showToast('No se pudo identificar al usuario', 'error');
@@ -3026,6 +3026,7 @@ function closeQuickSavings() {
 }
 
 
+
 async function saveQuickSavings() {
     const amount = parseFloat(
         document.getElementById('quick-savings-amount').value
@@ -3039,7 +3040,7 @@ async function saveQuickSavings() {
     try {
         // Obtener usuario autenticado
         const { data: { user }, error: userError } =
-            await supabase.auth.getUser();
+            await supabaseClient.auth.getUser();
 
         if (userError || !user) {
             showToast('No se pudo identificar al usuario', 'error');
@@ -3060,7 +3061,7 @@ async function saveQuickSavings() {
             const newCurrent =
                 (Number(existing.savingsCurrent) || 0) + amount;
 
-            const result = await supabase
+            const result = await supabaseClient
                 .from('savings_goals')
                 .update({
                     current_amount: newCurrent
@@ -3075,7 +3076,7 @@ async function saveQuickSavings() {
 
         } else {
             // Crear nueva meta de ahorro
-            const result = await supabase
+            const result = await supabaseClient
                 .from('savings_goals')
                 .insert({
                     user_id: user.id,
@@ -3102,7 +3103,7 @@ async function saveQuickSavings() {
 
         // Registrar movimiento en transacciones
         const { data: transferData, error: transferError } =
-            await supabase
+            await supabaseClient
                 .from('transactions')
                 .insert({
                     user_id: user.id,
@@ -3183,7 +3184,7 @@ async function saveAddAmount() {
     try {
         // Obtener usuario autenticado
         const { data: { user }, error: userError } =
-            await supabase.auth.getUser();
+            await supabaseClient.auth.getUser();
 
         if (userError || !user) {
             showToast('No se pudo identificar al usuario', 'error');
@@ -3290,7 +3291,7 @@ async function saveAddAmount() {
         } else {
 
             // Abono general distribuido mediante bola de nieve
-            const { data: result, error } = await supabase.rpc(
+            const { data: result, error } = await supabaseClient.rpc(
                 'apply_general_debt_payment',
                 {
                     p_amount: amount
