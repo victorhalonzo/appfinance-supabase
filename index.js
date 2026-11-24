@@ -296,20 +296,36 @@ async function initApp() {
 }
 
 
+
 async function checkMonthlyBudgetReset() {
     const currentMonth = localMonthKey();
 
-    const resetTracking = appData.find(
-        d => d.type === 'settings'
-    );
-
     try {
-        if (!resetTracking) {
-            // No existe configuración: crearla
+        // Obtener usuario autenticado
+        const { data: { user }, error: userError } =
+            await supabaseClient.auth.getUser();
+
+        if (userError) throw userError;
+        if (!user) throw new Error('No existe una sesión activa.');
+
+        // Consultar configuración existente
+        const { data: settings, error: settingsError } =
+            await supabaseClient
+                .from('user_settings')
+                .select('*')
+                .eq('user_id', user.id)
+                .maybeSingle();
+
+        if (settingsError) throw settingsError;
+
+        let updatedSettings;
+
+        if (!settings) {
+            // Crear configuración únicamente si no existe
             const { data, error } = await supabaseClient
                 .from('user_settings')
                 .insert({
-                    user_id: (await supabaseClient.auth.getUser()).data.user.id,
+                    user_id: user.id,
                     currency: selectedCurrency || 'USD',
                     budget_reset_month: currentMonth
                 })
@@ -318,40 +334,57 @@ async function checkMonthlyBudgetReset() {
 
             if (error) throw error;
 
-            appData.push({
-                ...data,
-                type: 'settings'
-            });
+            updatedSettings = data;
 
-        } else if (resetTracking.budget_reset_month !== currentMonth) {
+        } else if (settings.budget_reset_month !== currentMonth) {
             // Actualizar el mes de seguimiento
             const { data, error } = await supabaseClient
                 .from('user_settings')
                 .update({
                     budget_reset_month: currentMonth
                 })
-                .eq('id', resetTracking.id)
+                .eq('user_id', user.id)
                 .select()
                 .single();
 
             if (error) throw error;
 
-            // Actualizar el registro local
-            const index = appData.findIndex(
-                d => d.type === 'settings'
-            );
+            updatedSettings = data;
 
-            appData[index] = {
-                ...data,
-                type: 'settings'
-            };
+        } else {
+            // No hay cambios necesarios
+            updatedSettings = settings;
+        }
+
+        // Sincronizar configuración local
+        const settingsIndex = appData.findIndex(
+            d => d.type === 'settings'
+        );
+
+        const mappedSettings = {
+            ...updatedSettings,
+            type: 'settings'
+        };
+
+        if (settingsIndex !== -1) {
+            appData[settingsIndex] = mappedSettings;
+        } else {
+            appData.push(mappedSettings);
         }
 
     } catch (error) {
-        console.error('Error al actualizar el seguimiento mensual:', error);
-        showToast('No se pudo actualizar el seguimiento del presupuesto.', 'error');
+        console.error(
+            'Error al actualizar el seguimiento mensual:',
+            error
+        );
+
+        showToast(
+            'No se pudo actualizar el seguimiento del presupuesto.',
+            'error'
+        );
     }
 }
+
 
 
 
@@ -4156,6 +4189,46 @@ async function loginUser() {
 
 
 
+
+async function registerUser() {
+    const email = document.getElementById('register-email').value.trim();
+    const password = document.getElementById('register-password').value;
+
+    if (!email || !password) {
+        showToast('Ingresa tu correo y contraseña.', 'warning');
+        return;
+    }
+
+    if (password.length < 6) {
+        showToast('La contraseña debe tener al menos 6 caracteres.', 'warning');
+        return;
+    }
+
+    try {
+        const { data, error } = await supabaseClient.auth.signUp({
+            email,
+            password
+        });
+
+        if (error) throw error;
+
+        if (data.session) {
+            showToast('¡Cuenta creada correctamente! Bienvenido.', 'success');
+            await initApp();
+        } else {
+            showToast('Cuenta creada. Inicia sesión para continuar.', 'success');
+        }
+
+    } catch (error) {
+        console.error('Error al registrar usuario:', error);
+        showToast('No se pudo crear la cuenta. Inténtalo nuevamente.', 'error');
+    }
+}
+
+
+
+
+
 async function checkAuthSession() {
     const { data: { session }, error } = await supabaseClient.auth.getSession();
 
@@ -4207,6 +4280,11 @@ document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('login-form').addEventListener('submit', async (event) => {
         event.preventDefault();
         await loginUser();
+    });
+
+    document.getElementById('register-form').addEventListener('submit', async (event) => {
+        event.preventDefault();
+        await registerUser();
     });
 
     if (window.lucide) {
